@@ -525,7 +525,7 @@ var TrackModel = Backbone.Model.extend({
     context: null,
     bufferLoader: null,
     tempo: 120,
-    tempoAdjustment: null,
+    tempoAdjustment: 0,
     recorder: null,
     loopNodes: null  //soundData
   },
@@ -627,7 +627,7 @@ var TrackModel = Backbone.Model.extend({
 
       var delay = barTime - remainder;
       
-      var delayInMilliseconds = parseInt(delay.toString().replace(/\./g,'').slice(0,4)) 
+      var delayInMilliseconds = parseInt(delay.toString().replace(/\./g,'').slice(0,4))  // FUNCTION TO CHANGE!!!
       
       console.log("Context Current-time", this.get('context').currentTime)
       console.log("Record will start in:", delayInMilliseconds, "ms")
@@ -784,12 +784,13 @@ var LoopNodeCollection = Backbone.Collection.extend({
   }
 });
 
+//Get data from server...
+// Asyncronous callback most likely.
 
-
-// var loopNodesForTrack = new LoopNodeCollection([1,2,3,4,5,6]);
+var loopNodesForTrack = new LoopNodeCollection([{1,2,3,4,5,6}]);
 
 var track = new TrackModel({});
-// loopNodesForTrack: params
+// loopNodes: loopNodesForTrack 
 
 //   var recorder;
 //   var counter = 1;
