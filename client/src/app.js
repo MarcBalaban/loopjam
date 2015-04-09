@@ -527,8 +527,7 @@ var TrackModel = Backbone.Model.extend({
     tempo: 120,
     tempoAdjustment: null,
     recorder: null,
-    loopNodes: null  //data
-
+    loopNodes: null  //soundData
   },
 
   initialize: function(params){
@@ -621,8 +620,6 @@ var LoopNodeCollection = Backbone.Collection.extend({
 });
 
 var LoopNodeModel = Backbone.Model.extend({});
-
-var loopNodes = New LoopNode
 var loopNodeCollection = new LoopNodeCollection({model: loopNodeModel}) 
 
 var track = new TrackModel()
