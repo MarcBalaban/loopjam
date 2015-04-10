@@ -283,33 +283,33 @@
 //     },
 //     setCueAnimation: function(){
 //       d3.timer(function(){
-//         var loopNodes = this.loopNodes;
-//         var audioCtxTime = this.context.currentTime;
-//         var bar = calcBar(this.bpm);
-//         var speed = calcSpeed(bar);
-//         var tempoAdjustment = this.tempoAdjustment;
+      //   var loopNodes = this.loopNodes;
+      //   var audioCtxTime = this.context.currentTime;
+      //   var bar = calcBar(this.bpm);
+      //   var speed = calcSpeed(bar);
+      //   var tempoAdjustment = this.tempoAdjustment;
 
-//         // do this for each loopnode
-//         for(var i = 0; i < loopNodes.length; i++){
-//           var delta = audioCtxTime;
-//           var svg = loopNodes[i].d3Obj.svg;
-//           var multiplier = loopNodes[i].multiplier;
+      //   // do this for each loopnode
+      //   for(var i = 0; i < loopNodes.length; i++){
+      //     var delta = audioCtxTime;
+      //     var svg = loopNodes[i].d3Obj.svg;
+      //     var multiplier = loopNodes[i].multiplier;
 
-//           svg.selectAll(".cue").attr("transform", function(d) {
-//             // amount to rotate from original (xPos:0, yPos:1) position
-//             var rotateDeg = (delta * speed - tempoAdjustment) / multiplier;
+      //     svg.selectAll(".cue").attr("transform", function(d) {
+      //       // amount to rotate from original (xPos:0, yPos:1) position
+      //       var rotateDeg = (delta * speed - tempoAdjustment) / multiplier;
 
-//             // animation at 90, 180, 270, and 360 degree
+      //       // animation at 90, 180, 270, and 360 degree
 
-//             if(rotateDeg % 90 < 20 || rotateDeg % 90 > 80){
-//               svg.selectAll(".cue").attr("class", "cue darkplanet");
-//             } else{
-//               svg.selectAll(".cue").attr("class", "cue");
-//             }
-//             return "rotate(" + rotateDeg  +")";
-//           });
-//         }
-//       }.bind(this));
+      //       if(rotateDeg % 90 < 20 || rotateDeg % 90 > 80){
+      //         svg.selectAll(".cue").attr("class", "cue darkplanet");
+      //       } else{
+      //         svg.selectAll(".cue").attr("class", "cue");
+      //       }
+      //       return "rotate(" + rotateDeg  +")";
+      //     });
+      //   }
+      // }.bind(this));
 //     },
 
 
@@ -527,13 +527,13 @@ var TrackModel = Backbone.Model.extend({
     tempo: 120,
     tempoAdjustment: 0,
     recorder: null,
-    loopNodes: null  //soundData
-    animationTimer: null;
+    loopNodes: null,  //soundData
+    animationTimer: null
   },
 
   initialize: function(params){
     this.setAudioContext(params);
-    this.animationTimer = d3timer(params.loopNodes.updateAnimationPostion(this.get('tempo'), this.get('tempoAdjustment')))
+    this.set('animationTimer', d3.timer(params.loopNodes.updateAnimationPosition(this.get('tempo'), this.get('tempoAdjustment'), this.get('context').currentTime)));
   },
 
   setAudioContext: function(params) { 
@@ -569,7 +569,7 @@ var TrackModel = Backbone.Model.extend({
       // references for the buffers.
       
       
-      this.set('loopNodes', params.loopNodes)
+      this.set('loopNodes', params.loopNodes);
       
       this.set('bufferLoader', new BufferLoader(
         this.get('context'),
@@ -580,7 +580,7 @@ var TrackModel = Backbone.Model.extend({
       // Invoking bufferLoader's .load method does the actual
       // buffering and loading of the recordings, and stores
       // the buffers on the bufferloader instance.
-      this.bufferLoader.load();
+      this.get('bufferLoader').load();
 
       
       
@@ -742,12 +742,14 @@ var TrackModel = Backbone.Model.extend({
           this.set('tempoAdjustment', this.get('tempoAdjustment') + t * (3/2) * (bpm - this.get('bpm')));
           this.set('bpm', bpm);
 
-          _.each(this.get('loopNodes'), function(loopNode){
+          var loopNodes = this.get('loopNodes');
+
+          loopNodes.each(function(loopNode){
             var currentSource = loopNode.get('source');
             if(currentSource){
               currentSource.playbackRate.value = parseInt(bpm) / loopNode.get('recordedAtBpm');
             }    
-          })
+          });
     },
 
   // this.tempoAdjustment = 0; //adjustment parameter when user changes tempo. initially set at 0.
@@ -767,12 +769,15 @@ var LoopNodeModel = Backbone.Model.extend({
   defaults: {
     url: '',
     //refactor speed to barTime
-    speed: 2, 
+    speed: 2,
+    multiplier: null,
     source: null,
     gainNode: null,
+    recordedAtBpm: null,
     // port: loopNodeForTrack.nextPort(),
     startPlayingTime: null,
-    endPlayingTime: null
+    endPlayingTime: null,
+    d3Obj: null
   },
 
 
@@ -786,17 +791,42 @@ var LoopNodeCollection = Backbone.Collection.extend({
   defaults:{
   },
 
-  updateAnimationPostion: function(collection){
-    // Each(updates position)
-    currentTime, tempoAdjustment, bpm
+  initialize: function() {
+    
   },
 
-  initialize: {
-    
-  }
+  updateAnimationPosition: function(tempo, tempoAdjustment, currentTime){
+    // Each(updates position)
+      var bar = calcBar(tempo);
+      var angularSpeed = calcSpeed(bar);
 
-  
+      // do this for each loopnode
+      this.each(function(loopNode){
+        var delta = currentTime;
+        var svg = loopNode.get('d3Obj').svg;
+        var multiplier = loopNode.multiplier;
 
+        svg.selectAll(".cue").attr("transform", function(d) {
+          // amount to rotate from original (xPos:0, yPos:1) position
+          var rotateDeg = (delta * angularSpeed - tempoAdjustment) / multiplier;
+
+          // animation at 90, 180, 270, and 360 degree
+
+          if(rotateDeg % 90 < 20 || rotateDeg % 90 > 80){
+            svg.selectAll(".cue").attr("class", "cue darkplanet");
+          } else{
+            svg.selectAll(".cue").attr("class", "cue");
+          }
+          return "rotate(" + rotateDeg  +")";
+        });
+      });
+    },
+
+  giveUrls: function() {
+    return this.map(function(loopNode) {
+      return loopNode.get('url');
+    });
+  },
   // Assigns placeholder for where the track should be placed on the screen.
   nextPort: function(){
     if (!this.length) return 1;
@@ -808,11 +838,10 @@ var LoopNodeCollection = Backbone.Collection.extend({
 //Get data from server...
 // Asyncronous callback most likely.
 
-
-var loopNodesForTrack = new LoopNodeCollection([{1,2,3,4,5,6}]);
-loopNodesForTrack.set('d3timer', d3timer(this shit we want to run))
-var track = new TrackModel({});
-// loopNodes: loopNodesForTrack 
+var loopNode1 = [{url: "audio/click.mp3", speed:2, port:0, recordedAtBpm: 120}];
+var loopNodesForTrack = new LoopNodeCollection(loopNode1);
+// loopNodesForTrack.set('d3timer', d3timer(this shit we want to run))
+var track = new TrackModel({loopNodes: loopNodesForTrack});
 
 //   var recorder;
 //   var counter = 1;

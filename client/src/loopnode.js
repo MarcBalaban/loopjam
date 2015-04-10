@@ -6,6 +6,7 @@ var createLoopNode = function(loopClass, xPos, yPos){
     { R: 150, r: 10}
   ];
 
+el.html(<div class="loopnode1"));
 
   var svg = d3.select(loopClass).insert("svg")
     .attr("width", w).attr("height", h);
