@@ -528,10 +528,12 @@ var TrackModel = Backbone.Model.extend({
     tempoAdjustment: 0,
     recorder: null,
     loopNodes: null  //soundData
+    animationTimer: null;
   },
 
   initialize: function(params){
     this.setAudioContext(params);
+    this.animationTimer = d3timer(params.loopNodes.updateAnimationPostion(this.get('tempo'), this.get('tempoAdjustment')))
   },
 
   setAudioContext: function(params) { 
@@ -702,6 +704,9 @@ var TrackModel = Backbone.Model.extend({
         // the buffers on the bufferloader instance.
         this.bufferLoader.load();
     },
+
+
+
     // populateLoopNodes: function(){
     //   // initialize loopnodes
     //   var startAngle = 0; //starting angle should be 0
@@ -777,6 +782,21 @@ var LoopNodeModel = Backbone.Model.extend({
 var LoopNodeCollection = Backbone.Collection.extend({
   model: LoopNodeModel,
 
+
+  defaults:{
+  },
+
+  updateAnimationPostion: function(collection){
+    // Each(updates position)
+    currentTime, tempoAdjustment, bpm
+  },
+
+  initialize: {
+    
+  }
+
+  
+
   // Assigns placeholder for where the track should be placed on the screen.
   nextPort: function(){
     if (!this.length) return 1;
@@ -784,11 +804,13 @@ var LoopNodeCollection = Backbone.Collection.extend({
   }
 });
 
+
 //Get data from server...
 // Asyncronous callback most likely.
 
-var loopNodesForTrack = new LoopNodeCollection([{1,2,3,4,5,6}]);
 
+var loopNodesForTrack = new LoopNodeCollection([{1,2,3,4,5,6}]);
+loopNodesForTrack.set('d3timer', d3timer(this shit we want to run))
 var track = new TrackModel({});
 // loopNodes: loopNodesForTrack 
 
