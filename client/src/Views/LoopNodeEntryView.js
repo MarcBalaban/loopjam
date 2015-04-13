@@ -62,7 +62,6 @@ define([
     var d3obj = this.createLoopNode(loopNodeClass, x, y)
     this.model.set('d3Obj',d3obj);
 
-
     //JqueryUI volume controls
     $(this.el).find('#slider-vertical' + port).slider({
       orientation: "horizontal",

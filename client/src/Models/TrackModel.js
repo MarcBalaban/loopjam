@@ -61,6 +61,7 @@ define([
         console.log('Audio context set up.');
         console.log('navigator.getUserMedia ' + (navigator.getUserMedia ? 'available.' : 'not present!'));
 
+
         window.URL = window.URL || window.webkitURL
 
         // Initialize a new instance of the BufferLoader class,
