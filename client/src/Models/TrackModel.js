@@ -81,9 +81,6 @@ define([
         // the buffers on the bufferloader instance.
         this.get('bufferLoader').load();
 
-        
-        
-
       } else {
         // Web Audio API is not available. Ask the user to use a supported browser.
         alert('Web Audio API is not available');
@@ -220,18 +217,12 @@ define([
             var loopNodeClass = '.loopNode' + loopNode.get('port');
             var multiplier = loopNode.get('multiplier');
             var rotateDeg = (delta * angularSpeed - tempoAdjustment) / multiplier;
+            var degree = Math.floor(rotateDeg % 360)
+            // console.log(degree)
 
-            d3.selectAll(loopNodeClass + "cue").attr("transform", function(d) {
-              // amount to rotate from original (xPos:0, yPos:1) position
-              var rotateDeg = (delta * angularSpeed - tempoAdjustment) / multiplier;
-              // animation at 90, 180, 270, and 360 degree
-              if(rotateDeg % 90 < 20 || rotateDeg % 90 > 80){
-                svg.selectAll(".cue").attr("class", "cue darkplanet");
-              } else{
-                svg.selectAll(".cue").attr("class", "cue");
-              }
-              return "rotate(" + rotateDeg  +")";
-            });
+            
+            
+            $(loopNodeClass).val(degree).trigger('change');
 
           });
         }.bind(this));
