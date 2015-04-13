@@ -5,14 +5,25 @@
 
     <link rel="stylesheet" type="text/css" href="style.css" />
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css">
-    <script id="loopnode-template" type="text/template">
-      <div class="col-sm-6 col-md-4">
-        <div class="loopNode{{port}}"></div>
 
+
+    <script id="loopnode-pauseplayrec-template" type="text/template">
+      
         <button class="btn btn-success play" id="loopNode{{port}}" value="1">Play</button>
         <button class="btn btn-success pause" id="loopNode{{port}}" value="1">Pause</button>
         <button class="btn btn-danger record-new" value="1"><i class="fa fa-circle"></i> Record</button>
 
+    </script>
+
+
+    <script id="loopnode-template" type="text/template">
+      <div class="col-sm-6 col-md-4">
+
+        <input type="text" class="dial loopNode{{port}} wait" data-min="0" data-max="360" data-displayInput="false" data-skin="tron" data-displayPrevious="true">
+        <div class="loopNode{{port}}"></div>
+
+        <div id="recplaypause">
+        </div>
 
            <p>
              <label for="amount{{port}}">Volume:</label>
@@ -64,12 +75,13 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.4/js/bootstrap-select.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
-
+  <script src="src/jquery.knob.min.js"></script>
   <!-- <script src="src/recorderMainExecution.js"></script> -->
   <script src="src/Models/LoopNodeModel.js"></script>
   <script src="src/Collections/LoopNodeCollection.js"></script>
   <script src="src/Models/TrackModel.js"></script>
   <script src="src/Views/LoopNodesView.js"></script>
+  <script src="src/Views/LoopNodeEntryPlayPauseView.js"></script>
   <script src="src/Views/LoopNodeEntryView.js"></script>
   <script src="src/recordmp3.js"></script>
   <script src="src/utilities.js"></script>
@@ -87,12 +99,11 @@
       $('.selectpicker').selectpicker();
 
       
-      var audioData = [{url: "/audio/click.mp3", speed:2, port: 1, recordedAtBpm: 120},
-      {url: "/audio/metronome2.mp3", speed:2, port: 2, recordedAtBpm: 120},
-      {url: "/audio/metronome2.mp3", speed:2, port: 3, recordedAtBpm: 120},
-      {url: "/audio/metronome2.mp3", speed:2, port: 4, recordedAtBpm: 120},
-      {url: "/audio/metronome2.mp3", speed:2, port: 5, recordedAtBpm: 120},
-      {url: "/audio/metronome2.mp3", speed:2, port: 6, recordedAtBpm: 120}]
+      var audioData = [{url: "/audio/click.mp3", speed:2, port: 1, recordedAtBpm: 120, multiplier:1},
+      {url: "/audio/metronome2.mp3", speed:2, port: 2, recordedAtBpm: 120, multiplier:2},
+      {url: "/audio/metronome2.mp3", speed:2, port: 3, recordedAtBpm: 120, multiplier:4},
+      {url: "/audio/metronome2.mp3", speed:2, port: 4, recordedAtBpm: 120, multiplier:8}
+      ]
       // loopNodesForTrack.populateLoopNodes();
       // loopNodesForTrack.set('d3timer', d3timer(this shit we want to run))
       var track = new TrackModel({audioData: audioData});
@@ -103,6 +114,14 @@
       track.setCueAnimation();
     });
 
+  </script>
+  
+  <script>
+      $(function() {
+          $(".dial").knob({
+            // 'displayInput':'false'
+          });
+      });
   </script>
 
   </body>
