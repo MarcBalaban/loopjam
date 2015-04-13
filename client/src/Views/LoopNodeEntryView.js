@@ -3,24 +3,6 @@ var LoopNodeEntryView = Backbone.View.extend({
   initialize: function(){
   },
 
-  events:{
-    'click .record-new': function() {
-      this.model.record();
-      // console.log("record")
-    },
-    'click .play': function() {
-      this.model.play();
-      // console.log("record")
-    },
-    'click .pause': function() {
-      this.model.pause();
-      // console.log("record")
-    },
-    'change .volumeControl': function(){
-      console.log("volume Changed")
-    }
-    
-  },
 
   template: Handlebars.compile( $("#loopnode-template").html() ),
 
@@ -70,7 +52,6 @@ var LoopNodeEntryView = Backbone.View.extend({
     var d3obj = this.createLoopNode(loopNodeClass, x, y)
     this.model.set('d3Obj',d3obj);
 
-    debugger;
 
 
     //JqueryUI volume controls

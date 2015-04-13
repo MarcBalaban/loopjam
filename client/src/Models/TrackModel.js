@@ -159,7 +159,6 @@ var TrackModel = Backbone.Model.extend({
       console.log('Stopped recording.');
       // create WAV download link using audio data blob
       this.createDownloadLink(currentLoop);
-      
       this.get('recorder').clear();
     },
 
