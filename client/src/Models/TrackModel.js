@@ -61,7 +61,6 @@ define([
         console.log('Audio context set up.');
         console.log('navigator.getUserMedia ' + (navigator.getUserMedia ? 'available.' : 'not present!'));
 
-
         window.URL = window.URL || window.webkitURL
 
         // Initialize a new instance of the BufferLoader class,
@@ -86,6 +85,30 @@ define([
         // Web Audio API is not available. Ask the user to use a supported browser.
         alert('Web Audio API is not available');
       }
+    },
+
+    setCueAnimation: function(){
+      d3.timer(function(){
+        var loopNodes = this.get('loopNodes');
+        var audioCtxTime = this.get('context').currentTime;
+        var bar = calcBar(this.get('tempo'));
+        var angularSpeed = calcSpeed(bar);
+        var tempoAdjustment = this.get('tempoAdjustment');
+        // do this for each loopnode
+        loopNodes.each(function(loopNode) {
+          var delta = audioCtxTime;
+          var svg = loopNode.get('d3Obj').svg;
+          var loopNodeClass = '.loopNode' + loopNode.get('port');
+          var multiplier = loopNode.get('multiplier');
+          var rotateDeg = (delta * angularSpeed - tempoAdjustment) / multiplier;
+          var degree = Math.floor(rotateDeg % 360)
+          // console.log(degree)
+
+          
+          $(loopNodeClass).val(degree).trigger('change');
+
+        });
+      }.bind(this));
     },
 
       startUserMedia: function(stream) {
